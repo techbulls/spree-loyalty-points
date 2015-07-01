@@ -1,6 +1,6 @@
-Deface::Override.new(:virtual_path => 'spree/admin/users/show',
+Deface::Override.new(:virtual_path => 'spree/admin/users/_form',
   :name => 'add_loyalty_points_to_admin_user_show_page',
-  :insert_after => "tr[data-hook='roles']",
+  :insert_after => "[data-hook='admin_user_form_roles']",
   :text => "
   <tr data-hook='loyalty-points'>
     <th><%= Spree.t(:loyalty_points_balance) %></th>
