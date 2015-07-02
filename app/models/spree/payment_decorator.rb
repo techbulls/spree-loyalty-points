@@ -9,6 +9,7 @@ Spree::Payment.class_eval do
 
   fsm = self.state_machines[:state]
   fsm.after_transition :from => fsm.states.map(&:name) - [:completed], :to => [:completed], :do => :notify_paid_order
+  fsm.after_transition :from => fsm.states.map(&:name) - [:completed], :to => [:completed], :do => :redeem_loyalty_points_into_store_credit
 
   fsm.after_transition :from => fsm.states.map(&:name) - [:completed], :to => [:completed], :do => :redeem_loyalty_points, :if => :by_loyalty_points?
   fsm.after_transition :from => [:completed], :to => fsm.states.map(&:name) - [:completed] , :do => :return_loyalty_points, :if => :by_loyalty_points?
@@ -19,6 +20,13 @@ Spree::Payment.class_eval do
       order.payments.with_state('checkout').where("id != ?", self.id).each do |payment|
         payment.invalidate!
       end unless by_loyalty_points?
+    end
+
+    def redeem_loyalty_points_into_store_credit
+      if all_payments_completed?
+        #When payment is captured, redeem loyalty points if limit is reached
+        order.redeem_loyalty_points_in_store_credit order
+      end
     end
 
     def notify_paid_order

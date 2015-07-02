@@ -16,6 +16,12 @@ module Spree
         end
       end
 
+      def award_loyalty_points_into_store_credit
+        loyalty_points_earned = loyalty_points_for(item_total)
+        user.loyalty_points_balance = user.loyalty_points_balance + loyalty_points_earned
+        user.save!
+      end
+
       def loyalty_points_awarded?
         loyalty_points_credit_transactions.count > 0
       end
@@ -37,7 +43,43 @@ module Spree
       end
 
       def credit_loyalty_points_to_user_for_current_order(order)
-        order.award_loyalty_points
+        order.award_loyalty_points_into_store_credit
+      end
+
+      def redeem_loyalty_points_in_store_credit(order)
+        unless check_redeemable_loyalty_points_balance?(order)
+          min_balance = Spree::Config.loyalty_points_redeeming_balance
+          #errors.add :loyalty_points_balance, "should be atleast #{ min_balance.to_s + " " + "point".pluralize(min_balance) } for redeeming Loyalty Points"
+        else
+          loyalty_points_count = order.user.loyalty_points_balance
+          mininum_loyalty_points_to_redeem = Spree::Config.loyalty_points_redeeming_balance
+          amount = mininum_loyalty_points_to_redeem * Spree::Config.loyalty_points_conversion_rate
+
+          if redeem(order.user, amount)  
+            new_loyalty_points_balance = loyalty_points_count - mininum_loyalty_points_to_redeem
+            user.loyalty_points_balance = new_loyalty_points_balance
+            user.save!
+          end
+        end
+      end
+
+      def redeem(redeemer, amount)
+        store_credit_type = Spree::StoreCreditType.find_by(:name => "Non-expiring")
+        store_credit_category = Spree::StoreCreditCategory.first
+        store_credit = Spree::StoreCredit.new({
+          amount: amount,
+          currency: currency,
+          memo: "Loyalty Points",
+          user: redeemer,
+          created_by: redeemer,
+          type_id: store_credit_type.id,
+          category_id: store_credit_category.id,
+        })
+        store_credit.save!
+      end
+
+      def check_redeemable_loyalty_points_balance?(order)
+        order.user.loyalty_points_balance >= Spree::Config.loyalty_points_redeeming_balance
       end
       
       def create_credit_transaction(points)
