@@ -35,6 +35,10 @@ module Spree
         end
 
       end
+
+      def credit_loyalty_points_to_user_for_current_order(order)
+        order.award_loyalty_points
+      end
       
       def create_credit_transaction(points)
         user.loyalty_points_credit_transactions.create(source: self, loyalty_points: points)

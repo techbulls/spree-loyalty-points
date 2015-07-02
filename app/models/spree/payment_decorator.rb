@@ -23,6 +23,8 @@ Spree::Payment.class_eval do
 
     def notify_paid_order
       if all_payments_completed?
+        #When payment is captured, award loyalty points to customer.
+        order.credit_loyalty_points_to_user_for_current_order order
         order.touch :paid_at
       end
     end
