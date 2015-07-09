@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Spree::PaymentMethod::LoyaltyPoints do
+describe Spree::PaymentMethod::StoreCredit do
 
-  let(:loyalty_points_payment_method) { Spree::PaymentMethod::LoyaltyPoints.create!(:environment => Rails.env, :active => true, :name => 'Loyalty_Points') }
+  let(:loyalty_points_payment_method) { Spree::PaymentMethod::StoreCredit.create!(:environment => Rails.env, :active => true, :name => 'Loyalty_Points') }
   let(:payment) { Spree::Payment.new(:amount => 50.0) }
 
   before(:each) do

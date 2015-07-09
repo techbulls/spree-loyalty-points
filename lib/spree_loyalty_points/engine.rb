@@ -18,7 +18,7 @@ module SpreeLoyaltyPoints
     end
 
     initializer "spree.register.payment_methods" do |app|
-      app.config.spree.payment_methods << Spree::PaymentMethod::LoyaltyPoints
+      app.config.spree.payment_methods << Spree::PaymentMethod::StoreCredit
     end
 
     config.to_prepare &method(:activate).to_proc

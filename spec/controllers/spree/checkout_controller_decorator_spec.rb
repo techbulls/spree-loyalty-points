@@ -4,7 +4,7 @@ describe Spree::CheckoutController do
 
   let(:user) { mock_model(Spree::User).as_null_object }
   let(:order) { mock_model(Spree::Order).as_null_object }
-  let(:loyalty_points_payment_method) { Spree::PaymentMethod::LoyaltyPoints.create!(:environment => Rails.env, :active => true, :name => 'Loyalty_Points') }
+  let(:loyalty_points_payment_method) { Spree::PaymentMethod::StoreCredit.create!(:environment => Rails.env, :active => true, :name => 'Loyalty_Points') }
   let(:payment) { Spree::Payment.new(:amount => 50.0) }
 
   before(:each) do
