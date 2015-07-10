@@ -48,10 +48,8 @@ module Spree
       end
 
       def redeem_loyalty_points_in_store_credit(order)
-        unless check_redeemable_loyalty_points_balance?(order)
-          min_balance = Spree::Config.loyalty_points_redeeming_balance
-          #errors.add :loyalty_points_balance, "should be atleast #{ min_balance.to_s + " " + "point".pluralize(min_balance) } for redeeming Loyalty Points"
-        else
+        while check_redeemable_loyalty_points_balance?(order) do
+
           loyalty_points_count = order.user.loyalty_points_balance
           mininum_loyalty_points_to_redeem = Spree::Config.loyalty_points_redeeming_balance
           amount = mininum_loyalty_points_to_redeem * Spree::Config.loyalty_points_conversion_rate
