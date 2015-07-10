@@ -18,7 +18,7 @@ module Spree
 
       def award_loyalty_points_into_store_credit
         loyalty_points_earned = loyalty_points_for(item_total)
-        user.loyalty_points_credit_transactions.create(source: self, loyalty_points: points)
+        user.loyalty_points_credit_transactions.create(source: self, loyalty_points: loyalty_points_earned)
         user.loyalty_points_balance = user.loyalty_points_balance + loyalty_points_earned
         user.save!
       end
