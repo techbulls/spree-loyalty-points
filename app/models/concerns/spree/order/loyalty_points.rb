@@ -19,7 +19,7 @@ module Spree
       def award_loyalty_points_into_store_credit
         loyalty_points_earned = loyalty_points_for(item_total)
         user.loyalty_points_credit_transactions.create(source: self, loyalty_points: loyalty_points_earned)
-        user.loyalty_points_balance = user.loyalty_points_balance + loyalty_points_earned
+        user.loyalty_points_balance += loyalty_points_earned
         user.save!
       end
 
@@ -50,14 +50,12 @@ module Spree
       def redeem_loyalty_points_in_store_credit(order)
         while check_redeemable_loyalty_points_balance?(order) do
 
-          loyalty_points_count = order.user.loyalty_points_balance
           mininum_loyalty_points_to_redeem = Spree::Config.loyalty_points_redeeming_balance
           amount = mininum_loyalty_points_to_redeem * Spree::Config.loyalty_points_conversion_rate
 
-          if redeem(order.user, amount)  
-            new_loyalty_points_balance = loyalty_points_count - mininum_loyalty_points_to_redeem
-            user.loyalty_points_balance = new_loyalty_points_balance
+          if redeem(order.user, amount)
             user.loyalty_points_debit_transactions.create(source: self, loyalty_points: mininum_loyalty_points_to_redeem)
+            user.loyalty_points_balance -= mininum_loyalty_points_to_redeem
             user.save!
           end
         end
