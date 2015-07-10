@@ -57,6 +57,7 @@ module Spree
           if redeem(order.user, amount)  
             new_loyalty_points_balance = loyalty_points_count - mininum_loyalty_points_to_redeem
             user.loyalty_points_balance = new_loyalty_points_balance
+            user.loyalty_points_debit_transactions.create(source: self, loyalty_points: mininum_loyalty_points_to_redeem)
             user.save!
           end
         end
